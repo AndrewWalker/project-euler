@@ -1,0 +1,91 @@
+(* Content-type: application/mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 6.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       145,          7]
+NotebookDataLength[      2395,         82]
+NotebookOptionsPosition[      1997,         64]
+NotebookOutlinePosition[      2340,         79]
+CellTagsIndexPosition[      2297,         76]
+WindowFrame->Normal
+ContainsDynamic->False*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"OddPeriod", "[", "N_", "]"}], " ", ":=", 
+  RowBox[{"OddQ", "[", 
+   RowBox[{"Length", "[", 
+    RowBox[{
+     RowBox[{"ContinuedFraction", "[", 
+      RowBox[{"Sqrt", "[", "N", "]"}], "]"}], "[", 
+     RowBox[{"[", "2", "]"}], "]"}], "]"}], "]"}]}]], "Input",
+ CellChangeTimes->{{3.460282677915578*^9, 3.460282699946828*^9}, {
+  3.460282754087453*^9, 3.460282789868703*^9}, {3.460282823103078*^9, 
+  3.460282835743703*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Length", "[", 
+  RowBox[{"Select", "[", 
+   RowBox[{
+    RowBox[{"Select", "[", 
+     RowBox[{
+      RowBox[{"Range", "[", "10000", "]"}], ",", "MySqrFree"}], "]"}], ",", 
+    "OddPeriod"}], "]"}], "]"}]], "Input",
+ CellChangeTimes->{{3.460283070712453*^9, 3.460283076337453*^9}, {
+  3.460283127915578*^9, 3.460283179743703*^9}, {3.460283320368703*^9, 
+  3.460283358743703*^9}, {3.460283390524953*^9, 3.460283393040578*^9}}],
+
+Cell[BoxData["1322"], "Output",
+ CellChangeTimes->{{3.460283137165578*^9, 3.460283180556203*^9}, {
+   3.460283323134328*^9, 3.460283383321828*^9}, 3.460283417603078*^9}]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"MySqrFree", "[", "x_", "]"}], ":=", 
+  RowBox[{
+   RowBox[{
+    RowBox[{
+     RowBox[{"IntegerPart", "[", 
+      RowBox[{"Sqrt", "[", "x", "]"}], "]"}], "^", "2"}], "-", "x"}], "!=", 
+   "0"}]}]], "Input",
+ CellChangeTimes->{{3.460283220196828*^9, 3.460283309009328*^9}}]
+},
+WindowSize->{615, 750},
+WindowMargins->{{154, Automatic}, {Automatic, -3}},
+FrontEndVersion->"6.0 for Microsoft Windows (32-bit) (April 28, 2007)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[568, 21, 459, 11, 31, "Input"],
+Cell[CellGroupData[{
+Cell[1052, 36, 448, 10, 31, "Input"],
+Cell[1503, 48, 169, 2, 30, "Output"]
+}, Open  ]],
+Cell[1687, 53, 306, 9, 31, "Input"]
+}
+]
+*)
+
+(* End of internal cache information *)

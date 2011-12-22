@@ -1,0 +1,100 @@
+(* Content-type: application/mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 6.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       145,          7]
+NotebookDataLength[      2797,         90]
+NotebookOptionsPosition[      2509,         76]
+NotebookOutlinePosition[      2849,         91]
+CellTagsIndexPosition[      2806,         88]
+WindowFrame->Normal
+ContainsDynamic->False*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"PandigitalQ", "[", "lst_", "]"}], ":=", 
+  RowBox[{
+   RowBox[{"Length", "[", 
+    RowBox[{"Intersection", "[", 
+     RowBox[{"lst", ",", 
+      RowBox[{"Range", "[", 
+       RowBox[{"1", ",", "9"}], "]"}]}], "]"}], "]"}], "\[Equal]", 
+   "9"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"First9PQ", "[", "n_", "]"}], ":=", 
+  RowBox[{"PandigitalQ", "[", 
+   RowBox[{
+    RowBox[{"IntegerDigits", "[", 
+     RowBox[{"Fibonacci", "[", "n", "]"}], "]"}], "[", 
+    RowBox[{"[", 
+     RowBox[{"1", ";;", "9"}], "]"}], "]"}], "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"Last9PQ", "[", "n_", "]"}], ":=", 
+  RowBox[{"PandigitalQ", "[", 
+   RowBox[{
+    RowBox[{"IntegerDigits", "[", 
+     RowBox[{"Fibonacci", "[", "n", "]"}], "]"}], "[", 
+    RowBox[{"[", 
+     RowBox[{
+      RowBox[{"-", "9"}], ";;", 
+      RowBox[{"-", "1"}]}], "]"}], "]"}], "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"Solve104Q", "[", "n_", "]"}], ":=", 
+  RowBox[{
+   RowBox[{"First9PQ", "[", "n", "]"}], "&&", 
+   RowBox[{"Last9PQ", "[", "n", "]"}]}]}]}], "Input",
+ CellChangeTimes->{{3.464155951140625*^9, 3.4641560471875*^9}, {
+  3.4641560779375*^9, 3.464156123703125*^9}, {3.464156163578125*^9, 
+  3.4641561726875*^9}, {3.4641563288125*^9, 3.464156606875*^9}}],
+
+Cell[BoxData[
+ RowBox[{"Do", "[", 
+  RowBox[{
+   RowBox[{"If", "[", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"First9PQ", "[", "n", "]"}], " ", "||", " ", 
+      RowBox[{"Last9PQ", "[", "n", "]"}]}], ",", 
+     RowBox[{"Print", "[", 
+      RowBox[{"n", ",", "\"\< \>\"", ",", 
+       RowBox[{"First9PQ", "[", "n", "]"}], ",", "\"\< \>\"", ",", 
+       RowBox[{"Last9PQ", "[", "n", "]"}]}], "]"}], ",", 
+     RowBox[{"{", "}"}]}], "]"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"n", ",", "50", ",", "100000"}], "}"}]}], "]"}]], "Input",
+ CellChangeTimes->{{3.464156649765625*^9, 3.46415675275*^9}, {
+  3.464156805328125*^9, 3.464156999484375*^9}}]
+},
+WindowSize->{615, 750},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+FrontEndVersion->"6.0 for Microsoft Windows (32-bit) (April 28, 2007)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[568, 21, 1293, 35, 92, "Input"],
+Cell[1864, 58, 641, 16, 52, "Input"]
+}
+]
+*)
+
+(* End of internal cache information *)
+
