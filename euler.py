@@ -218,7 +218,21 @@ def product(seq):
     return reduce( lambda a,b : a*b, seq, 1 )
 
 def ncr(n,r):
+    """
+    algebraic choosing or r elements from n
+    """
     return factorial(n) / (factorial(r) * factorial(n-r))
+
+def choose( lst, num ):
+    """
+    generator over the choices of all possible tuples of num elements of seq
+    """
+    if num == 0:
+        yield []
+    else:
+        for i in xrange(len(lst)):
+            for rst in choose(lst[i+1:],num-1):
+                yield [lst[i]] + rst
 
 def divisors(n):
     res = set()
