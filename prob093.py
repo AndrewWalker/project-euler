@@ -1,5 +1,8 @@
 import fractions
 
+# Ned Batchelder's code for enumerating postfix trees
+# http://nedbatchelder.com/blog/200802/enumerating_trees.html
+
 def _exprs(expr, stack_depth, vals, ops):
     """ Generate postfix expressions recursively.
         `expr` is the expression so far, a list of values and operators.
