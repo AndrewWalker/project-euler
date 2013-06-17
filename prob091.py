@@ -1,36 +1,72 @@
-# naive approach
+from euler import *
 
-def dot(v1, v2):
-    return v1[0]*v2[0] + v1[1]*v2[1]
-
-def is_right_angle(p0, p1, p2):
-    delta01 = (p1[0]-p0[0], p1[1]-p0[1])
-    delta12 = (p2[0]-p1[0], p2[1]-p1[1])
-    return dot(delta01, delta12) == 0
-
-def naive_points( xy_max ):
+def naive_triangle2( xy_max ):
+    p0 = (0, 0)
     for x1 in xrange(xy_max):
         for y1 in xrange(xy_max):
-            yield (x1, y1)
+            if x1 == 0 and y1 == 0:
+                continue
+            d = gcd(x1, y1)
+            if d == 0 and y1 == 0:
+                dy = 1
+                dx = 0
+            else:
+                dy = x1 / d
+                dx = -y1 / d
+            #print 'X', x1, y1, (dx, dy)
+            for i in xrange(-(xy_max+1), xy_max+1):
+                if i == 0:
+                    continue
+                x2 = x1 + i * dx
+                y2 = y1 + i * dy
+                if x2 < 0 or x2 >= xy_max:
+                    continue
+                if y2 < 0 or y2 >= xy_max:
+                    continue
+                if x2 == 0 and y2 == 0:
+                    continue
+                if ((x1 == x2) and (y1 == y2)):
+                    continue
+                yield p0, (x1,y1), (x2,y2)
 
 def naive_triangle( xy_max ):
     p0 = (0, 0)
     for x1 in xrange(xy_max):
         for y1 in xrange(xy_max):
-            for x2 in xrange(x1, xy_max):
-                for y2 in xrange(y1, xy_max):
+            for x2 in xrange(xy_max):
+                for y2 in xrange(xy_max):
                     if x1 == 0 and y1 == 0:
+                        continue
+                    if x2 == 0 and y2 == 0:
                         continue
                     if x1 == x2 and y1 == y2:
                         continue
                     yield p0, (x1,y1), (x2,y2)
 
-items = []
-for p0, p1, p2 in naive_triangle(3):
-    print p0, p1, p2
-    #a = is_right_angle(p0, p1, p2)
-    #b = is_right_angle(p1, p2, p0)
-    #c = is_right_angle(p2, p0, p1)
-    #if a or b or c:
-        #items.append([p0, p1, p2])
-#print len(items)
+def dsq(x):
+    return x[0]**2+x[1]**2
+
+def check(u, v):
+    x1, y1 = u
+    x2, y2 = v
+    assert(x1 < xy_max)
+    assert(x2 < xy_max)
+    assert(y1 < xy_max)
+    assert(y2 < xy_max)
+
+def valid(iterable):
+    res = set()
+    for x, y, z in iterable:
+        #check(y,z)
+        al = dsq(y)
+        bl = dsq(z)
+        cl = dsq((y[0]-z[0],y[1]-z[1]))
+        al, bl, cl = sorted([al, bl, cl])
+        if al + bl - cl == 0:
+            res.add( tuple(sorted([x, y, z])) )
+    return res
+
+def solve(n):
+    return len(valid(naive_triangle2(n+1))) + n**2
+
+print solve(50)
