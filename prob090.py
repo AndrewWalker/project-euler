@@ -12,7 +12,8 @@ lst =[
 ]
 
 def constr(a, b, v1, v2):
-    return a in v1 and b in v2
+    if a in v1 and b in v2:
+        return True
 
 def row_or(row, v1, v2):
     for a, b in row:
@@ -26,11 +27,15 @@ def col_and(cols, v1, v2):
             return False
     return True
 
-i = 0
-faces = euler.choose(range(10), 6)
+combs = set()
+faces = list(euler.choose(range(10), 6))
 for d1 in faces:
     for d2 in faces:
         if col_and(lst, d1, d2):
-            i += 1
-            print i, d1, d2
-print i
+            a = tuple(d1)
+            b = tuple(d2)
+            ab = (a, b)
+            if b < a:
+                ab = (b, a)
+            combs.add(ab)
+print len(combs)

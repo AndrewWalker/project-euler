@@ -1,37 +1,71 @@
-import math 
+import math
 import os
 import pickle
 import collections
 import itertools
 import random
 
-class FibIter:
-    '''
-    From Matloff's tutorial on python iterators and generators
-    '''
-    def __init__(self):
-        self.fn2 = 0
-        self.fn1 = 1
-    def next(self):
-        (self.fn1,self.fn2,oldfn2) = (self.fn1+self.fn2,self.fn1,self.fn2)
-        return oldfn2
-    def __iter__(self):
-        return self
+def pells_eqn(x1, y1, n):
+    """Generator over solutions of pells equation
+
+    x^2 - n y^2 = 1
+
+    Examples - project euler 66, 94
+    """
+    xk = int(x1)
+    yk = int(y1)
+    while 1:
+        assert(xk**2 - n * yk**2 == 1)
+        yield (xk, yk)
+        xkn = x1 * xk + n * y1 * yk
+        ykn = x1 * yk +     y1 * xk
+        xk = xkn
+        yk = ykn
+
+def triangle_area(a, b, c):
+    """Area of a general triangle (without right angles)
+
+    Notes
+    -----
+    Uses Heron's formula
+    """
+    s = (a+b+c)/2
+    return math.sqrt(s * (s-a) * (s-b) * (s-c))
+
+def digits(n):
+    if n == 0:
+        return [0]
+    else:
+        lst = []
+        while n != 0:
+            lst = [ n % 10 ] + lst
+            n = n / 10
+        return lst
+
+def is_happy(n):
+    seen = set()
+    while 1:
+        if n == 1:
+            return True
+        if n in seen:
+            return False
+        seen.add(n)
+        n = sum(digit**2 for digit in digits(n))
+
+def fib_iter():
+    """Iterator over the Fibonacci sequence"""
+    fn2 = 0
+    fn1 = 1
+    yield fn2
+    while 1:
+        fn1, fn2 = fn1+fn2, fn1
+        yield fn2
 
 def primeIter():
     return itertools.ifilter( isprime, itertools.count(1) )
 
-def phisieve(nmax):
-    ts=range(nmax)
-    for i in xrange(2,nmax):
-        # Prime, as it hasn't been divided by anything lower.
-        if ts[i]==i: 
-            # Primes are coprime to everything below them.
-            ts[i]-=1 
-            # Factor i into the totients of its multiples.
-            for j in xrange(i+i,nmax,i):
-                ts[j] = (ts[j]*(i-1))//i
-    return ts
+def primes_less_than(m):
+    return itertools.takewhile(lambda n : n < m, primeIter())
 
 
 def ndigits(n):
@@ -46,30 +80,37 @@ def ndigits(n):
     return int(math.floor(math.log(n,10)+eps))
 
 def isSquare(n):
-    assert(type(n) == type(1))
+    assert(type(n) == type(1) or type(n) == long), type(n)
     rt = math.floor(math.sqrt(n))
     return rt*rt==n
 
 def coprime(a,b):
+    """Two integers a and b are co-prime if they have no common factors
+    """
     return gcd(a,b) == 1
 
 def totient(n):
-    '''
-    This is the naive (slow) way to do this, but good for testing
-    '''
-    # pre-condition
-    assert(n>=1)
+    """Totient or Euler's phi function for a value of `n`
 
-    # Make mine match with OEIS (Online Encylopedia of Integer Sequences)
+    literally, the number of integers less than `n` that are coprime to `n`
+    """
+    assert(n>=1)
     if n == 1:
         return 1
+    else:
+        return sum([1 for i in range(1, n) if coprime(i, n)])
 
-    # Other cases
-    cnt = 0
-    for i in range(1,n):
-        if coprime(i,n):
-            cnt += 1
-    return cnt
+def phisieve(nmax):
+    ts=range(nmax)
+    for i in xrange(2,nmax):
+        # Prime, as it hasn't been divided by anything lower.
+        if ts[i]==i:
+            # Primes are coprime to everything below them.
+            ts[i]-=1
+            # Factor i into the totients of its multiples.
+            for j in xrange(i+i,nmax,i):
+                ts[j] = (ts[j]*(i-1))//i
+    return ts
 
 def take(n, iterable):
     "Return first n items of the iterable as a list"
@@ -102,7 +143,7 @@ class in_file_cache:
         f = open(fname,'w')
         pickle.dump(obj, f)
         f.close()
-        del f       
+        del f
 
     def load(self, fname):
         f = open(fname,'r')
@@ -189,7 +230,7 @@ def naive_factorial(n):
 def factorial(n):
     if n == 0:
         return 1
-    return reduce( lambda a,b : a*b, xrange(1,n+1), 1 )
+    return n * factorial(n-1)
 
 def intToSeq(n):
     if n == 0:
@@ -248,7 +289,8 @@ def properDivisors(n):
 def factors(n):
     return divisors(n) - set([1,n])
 
-def primeFactors(n):
+def prime_factors(n):
+    assert(n > 0)
     if n == 1:
         return [1]
     else:
@@ -360,4 +402,21 @@ def fastfib(n):
 def fastfibFrontNine(n):
     return seqToInt(intToSeq(fastfib(8000))[0:9])
 
+import string
+digs = string.digits + string.lowercase
 
+def int2base(x, base):
+    # Alex Martelli
+    # http://stackoverflow.com/a/2267446/2246
+    if x < 0: sign = -1
+    elif x==0: return '0'
+    else: sign = 1
+    x *= sign
+    digits = []
+    while x:
+        digits.append(digs[x % base])
+        x /= base
+    if sign < 0:
+        digits.append('-')
+    digits.reverse()
+    return ''.join(digits)
