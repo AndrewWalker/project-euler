@@ -5,6 +5,8 @@ def numbers_with_n_digits(n):
 
 def prob30():
     cnt = 0
+    # picking the upper bound here was guess work, but it makes
+    # sense that you could prove this given some extra work
     for i in xrange(2, 7):
         for n in numbers_with_n_digits(i):
             digits = euler.digits(n)
