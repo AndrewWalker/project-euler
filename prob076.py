@@ -1,17 +1,20 @@
+# This is a good example of solving an integer partition problem
+# The easiest way to do this is probably using Mathematica, which
+# has elegant built-ins for doing this kind of work.
+#
+# PartitionsP[100] - 1 (where the -1 is to remove the partition with 1 element)
+#
+# http://en.wikipedia.org/wiki/Partition_(number_theory)
+# http://stackoverflow.com/questions/10035752/elegant-python-code-for-integer-partitioning
+import euler
 
-def g( left, maxv ):
-    #print 'g(%d,%d)' % (left,maxv)
-    if left == 0:
-        yield []
-    else:
-        for i in range(maxv,0,-1):
-            if left-i >= 0:
-                for rest in g(left-i,i):
-                    yield [ i ] + rest
-
-def glen(n):
-    return len(list(g(n,n-1)))
-
-for i in range(2,10):
-    print i,glen(i)
+# slow code, but this is very obviously correct for small n
+# from the SO question. Much too slow for this task.
+def slow_integer_partition(n):
+     result = set()
+     result.add((n, ))
+     for x in range(1, n):
+         for y in partition(n - x):
+             result.add(tuple(sorted((x, ) + y)))
+     return result
 
