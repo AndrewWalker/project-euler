@@ -174,13 +174,11 @@ def gcd(a,b):
     return a
 
 def in_mem_memoize(fun):
-    def inner(n):
-        if not n in inner.d:
-            v = fun(n)
-            inner.d[n] = v
-            return v
-        else:
-            return inner.d[n]
+    def inner(*args):
+        if args not in inner.d:
+            v = fun(*args)
+            inner.d[args] = v
+        return inner.d[args]
     inner.d = {}
     return inner
 
@@ -423,28 +421,13 @@ def int2base(x, base):
     digits.reverse()
     return ''.join(digits)
 
-@in_mem_memoize
-def count_partitions(k):
-    """Count the partions of a positive integer
-    """
-
-    # Generator over the sign and the pentagonal values
-    def impl(k):
-        i = 1
-        while 1:
-            if pentagonal(i) > k:
-                break
-            yield ((-1)**(i+1), pentagonal(i))
-            if pentagonal(-i) > k:
-                break
-            yield ((-1)**(i+1), pentagonal(-i))
-            i += 1
-
-    if k < 0:
-        return 0
-    if k == 0 or k == 1:
-        return 1
-    else:
-        lst = list(impl(k))
-        return sum( s*count_partitions(k-n) for s, n in lst )
-
+def count_partitions(m):
+    # from http://stackoverflow.com/questions/7802160/number-of-ways-to-partition-a-number-in-python
+    @in_mem_memoize
+    def partition(k, n):
+        assert(k > 0)
+        assert(n > 0)
+        if k > n: return 0
+        if k == n: return 1
+        return partition(k+1, n) + partition(k, n-k)
+    return partition(1, m)
