@@ -402,10 +402,12 @@ def fastfib(n):
 def fastfibFrontNine(n):
     return seqToInt(intToSeq(fastfib(8000))[0:9])
 
-import string
-digs = string.digits + string.lowercase
 
 def int2base(x, base):
+    """Convert a
+    """
+    import string
+    digs = string.digits + string.lowercase
     # Alex Martelli
     # http://stackoverflow.com/a/2267446/2246
     if x < 0: sign = -1
@@ -420,3 +422,29 @@ def int2base(x, base):
         digits.append('-')
     digits.reverse()
     return ''.join(digits)
+
+@in_mem_memoize
+def count_partitions(k):
+    """Count the partions of a positive integer
+    """
+
+    # Generator over the sign and the pentagonal values
+    def impl(k):
+        i = 1
+        while 1:
+            if pentagonal(i) > k:
+                break
+            yield ((-1)**(i+1), pentagonal(i))
+            if pentagonal(-i) > k:
+                break
+            yield ((-1)**(i+1), pentagonal(-i))
+            i += 1
+
+    if k < 0:
+        return 0
+    if k == 0 or k == 1:
+        return 1
+    else:
+        lst = list(impl(k))
+        return sum( s*count_partitions(k-n) for s, n in lst )
+
