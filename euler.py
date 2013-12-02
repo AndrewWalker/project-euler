@@ -431,3 +431,20 @@ def count_partitions(m):
         if k == n: return 1
         return partition(k+1, n) + partition(k, n-k)
     return partition(1, m)
+
+def power_sets_iter(aset):
+    """All the possible subsets of a set
+    """
+    n = len(aset)
+    alst = list(aset)
+    bits = [ 2**i for i in xrange(n) ]
+    for i in xrange(2**n):
+        js = [j for j in xrange(n) if i & bits[j] != 0 ]
+        yield set([ alst[j] for j in js])
+
+def count_power_sets(aset):
+    """
+    """
+    n = len(aset)
+    return 2**n
+
