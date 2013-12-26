@@ -62,6 +62,9 @@ def fib_iter():
         yield fn2
 
 def primeIter():
+    return prime_iter()
+
+def prime_iter():
     return itertools.ifilter( isprime, itertools.count(1) )
 
 def primes_less_than(m):
@@ -432,7 +435,19 @@ def count_partitions(m):
         return partition(k+1, n) + partition(k, n-k)
     return partition(1, m)
 
-def power_sets_iter(aset):
+# You can think of this as a form of restricted partitioning
+# In which there are a restricted number of classes (coins).
+@in_mem_memoize
+def coin_change(coins, value):
+    # http://en.wikipedia.org/wiki/Change-making_problem
+    if value <  0: return 0
+    if value == 0: return 1
+    if not coins:  return 0
+    return coin_change(coins, value-coins[0]) + coin_change(coins[1:], value)
+
+
+
+def power_sets_iter(aset, min_size=0):
     """All the possible subsets of a set
     """
     n = len(aset)
@@ -440,7 +455,8 @@ def power_sets_iter(aset):
     bits = [ 2**i for i in xrange(n) ]
     for i in xrange(2**n):
         js = [j for j in xrange(n) if i & bits[j] != 0 ]
-        yield set([ alst[j] for j in js])
+        if len(js) >= min_size:
+            yield set([ alst[j] for j in js])
 
 def count_power_sets(aset):
     """
