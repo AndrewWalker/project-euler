@@ -33,14 +33,38 @@ def triangle_area(a, b, c):
     return math.sqrt(s * (s-a) * (s-b) * (s-c))
 
 def digits(n):
+    #assert isinstance(n, int)
     if n == 0:
         return [0]
     else:
         lst = []
         while n != 0:
-            lst = [ n % 10 ] + lst
+            lst.append(n % 10)
             n = n / 10
+        lst.reverse()
         return lst
+
+def increasing_digits(seq):
+    for i in xrange(len(seq)-1):
+        if seq[i+1] < seq[i]:
+            return False
+    return True
+
+def decreasing_digits(seq):
+    for i in xrange(len(seq)-1):
+        if seq[i+1] > seq[i]:
+            return False
+    return True
+
+def is_bouncy(n):
+    seq = digits(n)
+    if increasing_digits(seq):
+        return False
+    elif decreasing_digits(seq):
+        return False
+    else:
+        return True
+
 
 def is_happy(n):
     seen = set()
