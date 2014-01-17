@@ -9,4 +9,9 @@ def enumerate_special_subsets(x):
             if j > i and u.isdisjoint(v):
                 yield u, v
 
-print len(list(enumerate_special_subsets(x)))
+cnt = 0
+for u, v in enumerate_special_subsets(range(12)):
+    if len(u) == len(v):
+        if not all(b>a for a, b in zip(sorted(u), sorted(v))):
+            cnt += 1
+print cnt
