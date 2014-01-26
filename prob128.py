@@ -2,69 +2,128 @@
 
 Question. What are the neighbours of a tile?
 
+    Assumption. Tiles directly `up` from the tile number 1 are the `first` tile
+                in each `ring`
+
     Question. How many tiles are there in each "ring"
     Answer.
-        def f(n):
+        def f(ring_no):
             if n == 0:
                 return 1
-            return 6*n
+            return 6*ring_no
 
-    Assumption. Tiles directly `up` from the tile number 1
-
-    Question. What is the tile number of the tile in ring n that is up
+    Question. What is the tile number of the first tile in ring n that is up
     Answer.
         def c(n):
             return sum([f(i) for i in xrange(n)])+1
 
-    Question. Which tiles are on an edge?
-        n.b. edge tiles are neighboured by:
-            2 tiles in the same ring
-            2 tiles in the next ring
-            2 tiles in the previous ring
+        # which you can use like this:
+        def ring_slow(n):
+            assert(n >= 1)
+            if n == 1:
+                return 0
+            else:
+                m = 1
+                cnt = 2
+                while 1:
+                    cnt += 6*m
+                    if n < cnt:
+                        return m
+                    m += 1
 
-    Question. Which tiles are on a corner?
-        n.b. corner tiles a neighboured by:
-            2 tiles in the same ring
-            3 tiles in the next ring
-            1 tile in the previous ring
+    Question. That isn't very nice. Can you do better?
+    Answer.
+        yep. the key recognition here that youve got something like a summation
+            6 * sum(i for in in xrange(n)) = n*(n+1)/2
 
+        which simplifies to:
+            3 * n*(n+1) + 1
+
+    Question. Is there a smart way to work out which ring a tile is in?
+    Answer.
+        yep. solve the quadratic equation from the last step
+            a = 3
+            b = 3
+            c = 1 - tile_number
+
+        the roots give you a fractional `ring`, which you can floor/ceil to get
+        current / next ring (with some testing)
+
+    Question. Which tiles are on a corner / side?
+    Answer.
+        for a tile `n`, the ring is
+            r = ring(n)
+        the first tile on ring `r` is:
+            t_r0 = ring_first(r)
+        the tile `n` is how many tiles from the first tile on the ring:
+            t_r  = n - t_r0
+        the tile `n` is on which side?
+            t_s  = t_r / 6
+        the tile `n` is on which position on the side?
+            t_p  = t_r % 6
 """
+import unittest
+from math import *
 
-def cumsum(lst):
-    cnt = 0
-    for item in lst:
-        cnt += item
-        yield cnt
 
-#def pairs(seq):
-    #for i in xrange(len(seq)-1):
-        #yield seq[i], seq[i+1]
+def quadratic(a, b, c):
+    y1 = (-b + sqrt(b**2 - 4*a*c ))/(2*a)
+    y2 = (-b - sqrt(b**2 - 4*a*c ))/(2*a)
+    return y1, y2
 
-#lst = [6*i for i in xrange(7)]
-##print list(cumsum(lst))
-#for i, j in pairs(list(cumsum(lst))):
-    #print i+1, j
+def ring(n):
+    v = max(quadratic(3.0, 3.0, 1.0 - n))
+    return int(ceil(v))
 
-#lst = [1, 6, 12, 18]
-#print list(cumsum(lst))
-
-def f(n):
+def ring_first(n):
     if n == 0:
         return 1
-    return 6*n
+    else:
+        r  = n-1
+        return 3*r**2 + 3*r + 2
 
-def c(n):
-    return sum([f(i) for i in xrange(n)])+1
+def to_hex_coord(n):
+    if n == 1:
+        return (0,0,0)
+    r = ring(n)
+    t_r0 = ring_first(r)
+    t_r  = n - t_r0
+    t_s  = t_r / r
+    t_p  = t_r % r
+    return (r, t_s, t_p)
 
-def ringno(n):
-    i = 0
-    while 1:
-        if c(i+1)-1 >= n:
-            return i
-        i+=1
+def from_hex_coord(tup):
+    r, t_s, t_p = tup
+    return ring_first(r) + t_s * r + t_p
 
-#print [c(i) for i in xrange(5)]
-for i in xrange(1, 50):
-    print ringno(i), i,
+def neighbours(n):
+    r, t_s, t_p = to_hex_coord(n)
+    if n == 1:
+        return set([2,3,4,5,6,7])
+    elif t_p == 0:
+        items = [
+            (r+1, t_s, t_p),
+        ]
+        items = [ from_hex_coord(item) for item in items ]
+        #print 'items=',items
+        return set(items)
+
+#for i in xrange(1, 100):
+    #print i, to_hex_coord(i), from_hex_coord(to_hex_coord(i))
+
+
+if __name__ == "__main__":
+    class HexagonTests(unittest.TestCase):
+        def test_nop(self):
+            pass
+        def test_n1(self):
+            self.assertEquals(neighbours(1), set([2,3,4,5,6,7]))
+        def test_n2(self):
+            self.assert_(8 in neighbours(2))
+            self.assert_(10 in neighbours(3))
+            self.assert_(16 in neighbours(6))
+
+    unittest.main()
+
 
 
