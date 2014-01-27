@@ -64,7 +64,7 @@ Question. What are the neighbours of a tile?
 """
 import unittest
 from math import *
-
+from euler import isprime
 
 def quadratic(a, b, c):
     y1 = (-b + sqrt(b**2 - 4*a*c ))/(2*a)
@@ -96,6 +96,12 @@ def from_hex_coord(tup):
     r, t_s, t_p = tup
     return ring_first(r) + t_s * r + t_p
 
+def ring_adj(tup, adj):
+    r, s, p = tup
+    n = (s * r + p + adj)
+    m = (n/r)%6
+    return (r, m, n % r)
+
 def neighbours(n):
     r, t_s, t_p = to_hex_coord(n)
     if n == 1:
@@ -103,27 +109,79 @@ def neighbours(n):
     elif t_p == 0:
         items = [
             (r+1, t_s, t_p),
+            ring_adj((r+1, t_s, t_p), -1),
+            ring_adj((r+1, t_s, t_p), +1),
+            ring_adj((r, t_s, t_p), -1),
+            ring_adj((r, t_s, t_p), +1),
+            (r-1, t_s, t_p),
         ]
         items = [ from_hex_coord(item) for item in items ]
-        #print 'items=',items
+        return set(items)
+    else:
+        items = [
+            ring_adj((r+1, t_s, t_p), 0),
+            ring_adj((r+1, t_s, t_p), +1),
+            ring_adj((r-1, t_s, t_p), 0),
+            ring_adj((r-1, t_s, t_p), -1),
+            ring_adj((r, t_s, t_p), -1),
+            ring_adj((r, t_s, t_p), +1),
+        ]
+        items = [ from_hex_coord(item) for item in items ]
         return set(items)
 
-#for i in xrange(1, 100):
-    #print i, to_hex_coord(i), from_hex_coord(to_hex_coord(i))
+def diffs(n):
+    return list(sorted(abs(n-d) for d in neighbours(n)))
 
+def PD(n):
+    return sum([1 for d in diffs(n) if isprime(d) ])
 
 if __name__ == "__main__":
     class HexagonTests(unittest.TestCase):
-        def test_nop(self):
-            pass
+        def test_diff17(self):
+            self.assertEquals(diffs(17), [1,1,10,11,16,17])
+        def test_PD17(self):
+            self.assertEquals(PD(17), 2)
         def test_n1(self):
             self.assertEquals(neighbours(1), set([2,3,4,5,6,7]))
         def test_n2(self):
-            self.assert_(8 in neighbours(2))
-            self.assert_(10 in neighbours(3))
-            self.assert_(16 in neighbours(6))
+            self.assertEquals(neighbours(2), set([1,3,7,8,9,19]))
+        def test_n8(self):
+            self.assertEquals(neighbours(8), set([2,9,19,20,21,37]))
+        def test_n10(self):
+            self.assertEquals(neighbours(10), set([3,9,11,22,23,24]))
+        def test_n11(self):
+            self.assertEquals(neighbours(11), set([3,4,10,12,24,25]))
+        def test_n15(self):
+            self.assertEquals(neighbours(15), set([5, 6, 14, 16, 30, 31]))
+        def test_n21(self):
+            self.assertEquals(neighbours(21), set([20,22,9,8,39,40]))
 
-    unittest.main()
+    #unittest.main()
+    def slow_gen():
+        cnt = 0
+        i = 1
+        while 1:
+            if PD(i) == 3:
+                cnt += 1
+                yield i
+            i+=1
 
+    def fast_gen():
+        yield 1
+        i = 1
+        while 1:
+            a = from_hex_coord((i, 0, 0))
+            b = from_hex_coord((i, 5, i-1))
+            if PD(a) == 3:
+                yield a
+            if PD(b) == 3:
+                yield b
+            i += 1
 
-
+    #import itertools
+    #for a, b in itertools.izip(slow_gen(), fast_gen()):
+        #print a, b
+    for i, v in enumerate(fast_gen()):
+        print i, v
+        if i == 1999:
+            break
