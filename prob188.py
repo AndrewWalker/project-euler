@@ -49,12 +49,41 @@ def tetration(num, tetrate):
 #print 222%4
 
 
-def fp(a, p, n):
-    assert(coprime(a, n))
-    phi_n = totient(n)
-    q = p % phi_n
-    return  (a**q) % n
+#def fp(a, p, n):
+    #assert(coprime(a, n))
+    #phi_n = totient(n)
+    #q = p % phi_n
+    #return  (a**q) % n
 
-lim = 10**9
-print 3**3
-print fp(3, fp(3, 3, lim), lim)
+#lim = 10**9
+#print 3**3
+#print fp(3, fp(3, 3, lim), lim)
+
+
+import euler
+
+def mod_exp(a, b, c):
+    """Calculate $(a^b)%c$
+    """
+    x = 1
+    y = a
+    while b > 0:
+        if b % 2 == 1:
+            x = (x * y) % c
+        y = (y * y) % c
+        b /= 2
+    return x % c
+
+def mod_tetrate(base, pow, mod):
+    a = base
+    tmod = 4*10**7 #euler.totient(mod)
+    for i in xrange(pow-2):
+        #print base, a, tmod
+        a = mod_exp(base, a, tmod)
+    return mod_exp(base, a, mod)
+
+#print mod_exp(3, 10, 100)
+#print (3**10) % 10000
+#print 3**10
+print mod_tetrate(1777, 10, 10**8)
+print mod_tetrate(1777, 100, 10**8)
