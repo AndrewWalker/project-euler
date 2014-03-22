@@ -506,4 +506,24 @@ def powmod(a, b, c):
     return x % c
 
 
+def is_mersenne_prime(p):
+    """Detect if 2**p - 1 is prime
+
+    .. examples::
+
+        assert(is_mersenne_prime(3))
+        assert(is_mersenne_prime(7))
+        assert(is_mersenne_prime(31))
+        assert(is_mersenne_prime(127))
+
+    Uses the `Lucas-Lehmer test <http://en.wikipedia.org/wiki/Lucas%E2%80%93Lehmer_primality_test>`_
+    """
+    s = 4
+    M = 2**p - 1
+    for _ in xrange(p-2):
+        s = ((s * s) - 2) % M
+    if s == 0:
+        return True
+    return False
+
 
