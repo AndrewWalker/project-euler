@@ -287,6 +287,7 @@ def ncr(n,r):
     """
     algebraic choosing or r elements from n
     """
+    assert(r <= n)
     return factorial(n) / (factorial(r) * factorial(n-r))
 
 def choose( lst, num ):
@@ -328,7 +329,9 @@ import MillerRabin
 uint32max = 2**32
 
 def isprime(n):
-    assert(n < uint32max)
+    #assert(n < uint32max)
+    if n > uint32max:
+        return isprime_slow(n)
     if n == 0 or n == 1:
         return False
     return MillerRabin.miller_rabin(n)
@@ -487,4 +490,40 @@ def count_power_sets(aset):
     """
     n = len(aset)
     return 2**n
+
+def powmod(a, b, c):
+    """Calculate $(a^b)%c$
+
+    Running time is $O(log(b))$
+    """
+    x = 1
+    y = a
+    while b > 0:
+        if b % 2 == 1:
+            x = (x * y) % c
+        y = (y * y) % c
+        b /= 2
+    return x % c
+
+
+def is_mersenne_prime(p):
+    """Detect if 2**p - 1 is prime
+
+    .. examples::
+
+        assert(is_mersenne_prime(3))
+        assert(is_mersenne_prime(7))
+        assert(is_mersenne_prime(31))
+        assert(is_mersenne_prime(127))
+
+    Uses the `Lucas-Lehmer test <http://en.wikipedia.org/wiki/Lucas%E2%80%93Lehmer_primality_test>`_
+    """
+    s = 4
+    M = 2**p - 1
+    for _ in xrange(p-2):
+        s = ((s * s) - 2) % M
+    if s == 0:
+        return True
+    return False
+
 
