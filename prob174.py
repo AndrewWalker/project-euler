@@ -1,14 +1,28 @@
 """Project Euler 174.
 
-Question. Given t tiles, how many square lamina exist?
+https://projecteuler.net/problem=174
+https://github.com/AndrewWalker/project-euler/blob/master/prob174.py
 
-Given that maximum value of
+Q. What's hard?
+A. Picking out all solutions in the form
 
-    #a^2 - b^2 = t
-    #(a - b)(a + b) = t
-    #a^2 + ba -ba -b^2  = t
-    #sqrt(a^2 - t) = b
+x^2 - y^2 = n
 
+For an arbitrary n
+
+Q. Is the equation familiar?
+A. Yep, it's a modified Pell equation 
+
+x^2 - N y^2 = k
+
+Q. Any good reading?
+A. Yep,
+
+http://en.m.wikipedia.org/wiki/Pell%27s_equation
+http://www.ams.org/notices/200202/fea-lenstra.pdf
+
+Looking at some stuff Euler links to in the forums 
+    https://www.ocf.berkeley.edu/~wwu/cgi-bin/yabb/YaBB.cgi?board=riddles_medium
 """
 from euler import *
 
