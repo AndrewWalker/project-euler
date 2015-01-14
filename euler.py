@@ -1,9 +1,39 @@
+"""Project Euler support code
+
+This module includes (a few) doctests, you can run them
+on the command-line like:
+
+    $ python euler.py
+
+You won't see any results if the tests passed
+"""
 import math
 import os
 import pickle
 import collections
-import itertools
 import random
+import sympy
+import itertools
+from itertools import combinations, permutations, \
+    combinations_with_replacement
+from sympy import totient, isprime, divisors, factors
+
+# we'll rename this to minimise regressions
+fib = sympy.fibonacci
+
+def repunit(n):
+    """A base 10 repunit is a number with all digits 1
+
+    For details see http://en.wikipedia.org/wiki/Repunit
+
+    >>> repunit(1)
+    1
+    >>> repunit(4)
+    1111
+    >>> repunit(8)
+    11111111
+    """
+    return (10**n-1)/9
 
 def pells_eqn(x1, y1, n):
     """Generator over solutions of pells equation
@@ -25,15 +55,20 @@ def pells_eqn(x1, y1, n):
 def triangle_area(a, b, c):
     """Area of a general triangle (without right angles)
 
-    Notes
-    -----
-    Uses Heron's formula
+    >>> triangle_area(3, 4, 5)
+    6.0
     """
     s = (a+b+c)/2
     return math.sqrt(s * (s-a) * (s-b) * (s-c))
 
 def digits(n):
-    #assert isinstance(n, int)
+    """Returns the digits that make up a number
+
+    >>> digits(123)
+    [1, 2, 3]
+    >>> digits(4567)
+    [4, 5, 6, 7]
+    """
     if n == 0:
         return [0]
     else:
@@ -44,19 +79,58 @@ def digits(n):
         lst.reverse()
         return lst
 
+def from_digits( seq ):
+    """Return a number from individual digits
+
+    >>> from_digits([1, 2, 3])
+    123
+    """
+    return int( ''.join( [ str(i) for i in seq ] ) )
+
+def ndigits(n):
+    """Count the number of base 10 digits in a number
+
+    >>> ndigits(9)
+    1
+    >>> ndigits(99)
+    2
+    >>> ndigits(99999)
+    5
+    """
+    return len(digits(n))
+
 def increasing_digits(seq):
+    """Are the values in a sequence increasing (or equal)
+
+    >>> increasing_digits(digits(134468))
+    True
+    """
     for i in xrange(len(seq)-1):
         if seq[i+1] < seq[i]:
             return False
     return True
 
 def decreasing_digits(seq):
+    """Are the values in a sequence decreasing (or equal)
+
+    >>> decreasing_digits(digits(66420))
+    True
+    """
     for i in xrange(len(seq)-1):
         if seq[i+1] > seq[i]:
             return False
     return True
 
 def is_bouncy(n):
+    """Checks if a number is bouncy
+
+    >>> is_bouncy(66420)
+    False
+    >>> is_bouncy(134468)
+    False
+    >>> is_bouncy(155349)
+    True
+    """
     seq = digits(n)
     if increasing_digits(seq):
         return False
@@ -65,8 +139,26 @@ def is_bouncy(n):
     else:
         return True
 
-
 def is_happy(n):
+    """Check if a number is happy
+
+    A happy number is a number defined by the following process: Starting
+    with any positive integer, replace the number by the sum of the
+    squares of its digits, and repeat the process until the number equals
+    1 (where it will stay), or it loops endlessly in a cycle which does
+    not include 1. Those numbers for which this process ends in 1 are
+    happy numbers, while those that do not end in 1 are unhappy numbers
+    (or sad numbers)
+
+    http://en.wikipedia.org/wiki/Happy_number
+
+    >>> is_happy(31)
+    True
+    >>> is_happy(32)
+    True
+    >>> is_happy(33)
+    False
+    """
     seen = set()
     while 1:
         if n == 1:
@@ -76,8 +168,20 @@ def is_happy(n):
         seen.add(n)
         n = sum(digit**2 for digit in digits(n))
 
+def take(n, iterable):
+    "Return first n items of the iterable as a list"
+    return list(itertools.islice(iterable, n))
+
 def fib_iter():
-    """Iterator over the Fibonacci sequence"""
+    """Iterator over the Fibonacci sequence
+
+    There are much better ways to do this, but this
+    is an ok start if you're looking for something 
+    trivial
+
+    >>> [ i for i in take(6, fib_iter()) ]
+    [0, 1, 1, 2, 3, 5]
+    """
     fn2 = 0
     fn1 = 1
     yield fn2
@@ -85,47 +189,27 @@ def fib_iter():
         fn1, fn2 = fn1+fn2, fn1
         yield fn2
 
-def primeIter():
-    return prime_iter()
+def is_perfect_square(n):
+    """Check if a number is a perfect square
 
-def prime_iter():
-    return itertools.ifilter( isprime, itertools.count(1) )
-
-def primes_less_than(m):
-    return itertools.takewhile(lambda n : n < m, primeIter())
-
-
-def ndigits(n):
-    '''
-    Use a base 10 logarithm to calculate an equivalent
-    to len(euler.intToSeq(n))
-    '''
-    # note: the small fudge factor here to overcome
-    #       numerical stability issues of taking the
-    #       floor of a logarithm
-    eps = 10e-15
-    return int(math.floor(math.log(n,10)+eps))
-
-def isSquare(n):
+    >>> is_perfect_square(144)
+    True
+    >>> is_perfect_square(145)
+    False
+    """
     assert(type(n) == type(1) or type(n) == long), type(n)
-    rt = math.floor(math.sqrt(n))
+    rt = int(math.floor(math.sqrt(n)))
     return rt*rt==n
 
 def coprime(a,b):
     """Two integers a and b are co-prime if they have no common factors
+
+    >>> coprime(5, 3)
+    True
+    >>> coprime(6, 3)
+    False
     """
     return gcd(a,b) == 1
-
-def totient(n):
-    """Totient or Euler's phi function for a value of `n`
-
-    literally, the number of integers less than `n` that are coprime to `n`
-    """
-    assert(n>=1)
-    if n == 1:
-        return 1
-    else:
-        return sum([1 for i in range(1, n) if coprime(i, n)])
 
 def phisieve(nmax):
     ts=range(nmax)
@@ -139,61 +223,52 @@ def phisieve(nmax):
                 ts[j] = (ts[j]*(i-1))//i
     return ts
 
-def take(n, iterable):
-    "Return first n items of the iterable as a list"
-    return list(itertools.islice(iterable, n))
+def primepi(n):
+    """Number of primes less than a value
 
-def diceVals(n,maxv):
-    if n == 0:
-        yield []
-    else:
-        for i in range(1,maxv+1):
-            for j in diceVals(n-1,maxv):
-                yield [i]+j
+    http://mathworld.wolfram.com/PrimeCountingFunction.html
 
-def diceProb(n,maxv):
-    cnt  = 0
-    freq = collections.defaultdict(int)
-    for vals in diceVals(n,maxv):
-        s = sum(vals)
-        freq[s] += 1
-        cnt += 1
-    return freq,cnt
+    This is here as a reminder of what is in sympy
 
+    >>> primepi(10**5)
+    9592
+    """
+    return sympy.primepi(n) 
 
+def dice_vals(num_dice, maxv):
+    """Give all possible combinations of dice
 
-class in_file_cache:
-    def __init__(self, fun):
-        self.fun = fun
+    >>> len(list(dice_vals(2, 6)))
+    36
+    """
+    return itertools.product(*tuple([range(1, maxv+1)] * num_dice))
 
-    def save(self, fname, obj):
-        f = open(fname,'w')
-        pickle.dump(obj, f)
-        f.close()
-        del f
+def dice_frequency(num_dice, maxv):
+    """Get the frequency of occurance of a particular die value
 
-    def load(self, fname):
-        f = open(fname,'r')
-        ret = pickle.load(f)
-        f.close()
-        del f
-        return ret
-
-    def __call__(self,*args,**kwargs):
-        ret = None
-        fname = '.' + self.fun.func_name
-        if not os.path.exists(fname):
-            ret = self.fun(*args,**kwargs)
-            self.save(fname,ret)
-        else:
-            ret = self.load(fname)
-        return ret
+    >>> dice_frequency(2, 6)[7]
+    6
+    >>> dice_frequency(2, 6)[2]
+    1
+    >>> dice_frequency(2, 6)[1]
+    0
+    """
+    vals = [sum(i) for i in dice_vals(num_dice, maxv)]
+    freq = collections.Counter(vals)
+    return freq
 
 def gcd(a,b):
-    '''
-    Euclid's method for finding the GCD.
-    This is a significant improvement on other approaches
-    '''
+    """Euclid's method for finding the GCD.
+
+    If you need a caching version of this, use sympy.igcd
+
+    >>> gcd(10, 2)
+    2
+    >>> gcd(10, 4)
+    2
+    >>> gcd(7, 3)
+    1
+    """
     while b != 0:
         t = b
         b = a % b
@@ -201,6 +276,8 @@ def gcd(a,b):
     return a
 
 def in_mem_memoize(fun):
+    """Function decorator to cache values
+    """
     def inner(*args):
         if args not in inner.d:
             v = fun(*args)
@@ -210,110 +287,46 @@ def in_mem_memoize(fun):
     return inner
 
 @in_mem_memoize
-def fib(n):
-    if n == 0:
-        return 0
-    elif n == 1:
-        return 1
-    else:
-        return fib(n-1) + fib(n-2)
-
-def cond_memoize(cond):
-    def memoize_wrap(fun):
-        def inner(n):
-            if cond(n):
-                return fun(n)
-            else:
-                if not n in inner.d:
-                    v = fun(n)
-                    inner.d[n] = v
-                    return v
-                else:
-                    return inner.d[n]
-        inner.d = {}
-        return inner
-    return memoize_wrap
-
-
-
-def binet_fib(n):
-    '''
-    a closed form approach to solving fib problems
-    '''
-    #assert(1 == 0) # not tested for big n
-    phi = (1. + math.sqrt(5))/2
-    return int(((phi**n)-((1/phi)**n))/math.sqrt(5))
-
-@in_mem_memoize
-def naive_factorial(n):
-    if n == 0:
-        return 1
-    else:
-        return n * factorial(n-1)
-
-@in_mem_memoize
 def factorial(n):
+    """Evaluate the factorial function n!
+
+    See: http://docs.sympy.org/latest/modules/mpmath/functions/gamma.html
+
+    >>> factorial(4)
+    24
+    """
     if n == 0:
         return 1
     return n * factorial(n-1)
 
-def intToSeq(n):
-    if n == 0:
-        return [0]
-    else:
-        lst = []
-        while n != 0:
-            lst = [ n % 10 ] + lst
-            n = n / 10
-        return lst
-
-def seqToInt( seq ):
-    return int( ''.join( [ str(i) for i in seq ] ) )
-
-def sieve(n):
-    lst   = range(0,n)
-    prime = [ True for i in lst ]
-    for i in range(2,int(math.sqrt(n))+1):
-        for j in range(2*i,n,i):
-            prime[j] = False
-    lst = lst[2:]
-    prime = prime[2:]
-    return [ i for i,j in zip(lst,prime) if j ]
-
 def product(seq):
+    """Cumulative product of all items in a sequence
+
+    >>> product([2, 3, 4])
+    24
+    """
     return reduce( lambda a,b : a*b, seq, 1 )
 
-def ncr(n,r):
-    """
-    algebraic choosing or r elements from n
-    """
-    assert(r <= n)
-    return factorial(n) / (factorial(r) * factorial(n-r))
+def ncr(n, r):
+    """Number of ways to choose r elements from n
 
-def choose( lst, num ):
-    """
-    generator over the choices of all possible tuples of num elements of seq
-    """
-    if num == 0:
-        yield []
-    else:
-        for i in xrange(len(lst)):
-            for rst in choose(lst[i+1:],num-1):
-                yield [lst[i]] + rst
+    This is in as a reminder of how the sympy api works
 
-def divisors(n):
-    res = set()
-    for i in range(1,int(math.sqrt(n))+1):
-        if n % i == 0:
-            res.add(i)
-            res.add(n/i)
-    return res
+    >>> ncr(10, 5)
+    252
+    """
+    return sympy.binomial(n, r)
+
+def choose( lst, n ):
+    """Iterator over the way to choose n items from `lst`
+
+    >>> take(3, choose(range(4), 2))
+    [(0, 1), (0, 2), (0, 3)]
+    """
+    return combinations(lst, n)
 
 def properDivisors(n):
     return divisors(n)-set([n])
-
-def factors(n):
-    return divisors(n) - set([1,n])
 
 def prime_factors(n):
     assert(n > 0)
@@ -322,86 +335,41 @@ def prime_factors(n):
     else:
         return [ i for i in divisors(n) if isprime(i) ]
 
-def iscomposite(n):
+def is_composite(n):
+    """Is a number composite
+
+    >>> is_composite(1)
+    False
+    >>> is_composite(4)
+    True
+    >>> is_composite(5)
+    False
+    """
     return (n>1) and not isprime(n)
 
-import MillerRabin
-uint32max = 2**32
+def palindrome(n):
+    """Check if a number is a palindrome
 
-def isprime(n):
-    #assert(n < uint32max)
-    if n > uint32max:
-        return isprime_slow(n)
-    if n == 0 or n == 1:
-        return False
-    return MillerRabin.miller_rabin(n)
-
-def isprime_slow(n):
-    if n <= 1:
-        return False
-    if n == 2:
-        return True
-    if n % 2 == 0:
-        return False
-    for i in range(3, int(math.sqrt(n))+1, 2):
-        if n % i == 0:
+    >>> palindrome(123)
+    False
+    >>> palindrome(1234321)
+    True
+    >>> palindrome(12344321)
+    True
+    """
+    s = str(n)
+    for i in range(len(s)/2):
+        if s[i] != s[-(i+1)]:
             return False
     return True
 
-def palindrome(n):
-	s = str(n)
-	for i in range(len(s)/2):
-		if s[i] != s[-(i+1)]:
-			return False
-	return True
+def word_sum(word):
+    """Return the sum of the letter values of a word
 
-def combinations(iterable, r):
-    # combinations('ABCD', 2) --> AB AC AD BC BD CD
-    # combinations(range(4), 3) --> 012 013 023 123
-    pool = tuple(iterable)
-    n = len(pool)
-    if r > n:
-        return
-    indices = range(r)
-    yield tuple(pool[i] for i in indices)
-    while True:
-        for i in reversed(range(r)):
-            if indices[i] != i + n - r:
-                break
-        else:
-            return
-        indices[i] += 1
-        for j in range(i+1, r):
-            indices[j] = indices[j-1] + 1
-        yield tuple(pool[i] for i in indices)
-
-def permutations(iterable, r=None):
-    # permutations('ABCD', 2) --> AB AC AD BA BC BD CA CB CD DA DB DC
-    # permutations(range(3)) --> 012 021 102 120 201 210
-    pool = tuple(iterable)
-    n = len(pool)
-    r = n if r is None else r
-    if r > n:
-        return
-    indices = range(n)
-    cycles = range(n, n-r, -1)
-    yield tuple(pool[i] for i in indices[:r])
-    while n:
-        for i in reversed(range(r)):
-            cycles[i] -= 1
-            if cycles[i] == 0:
-                indices[i:] = indices[i+1:] + indices[i:i+1]
-                cycles[i] = n - i
-            else:
-                j = cycles[i]
-                indices[i], indices[-j] = indices[-j], indices[i]
-                yield tuple(pool[i] for i in indices[:r])
-                break
-        else:
-            return
-
-def alphaValue(name):
-    return sum([ ord(c)-ord('A')+1 for c in name ])
+    >>> word_sum('SKY')
+    55
+    """
+    return sum([ ord(c)-ord('A')+1 for c in word ])
 
 def randBigPrime():
     '''
@@ -472,8 +440,6 @@ def coin_change(coins, value):
     if not coins:  return 0
     return coin_change(coins, value-coins[0]) + coin_change(coins[1:], value)
 
-
-
 def power_sets_iter(aset, min_size=0):
     """All the possible subsets of a set
     """
@@ -486,7 +452,12 @@ def power_sets_iter(aset, min_size=0):
             yield set([ alst[j] for j in js])
 
 def count_power_sets(aset):
-    """
+    """Count the number of ways a set can be partitioned
+
+    http://en.wikipedia.org/wiki/Power_set
+
+    >>> count_power_sets(set(range(4)))
+    16
     """
     n = len(aset)
     return 2**n
@@ -495,6 +466,11 @@ def powmod(a, b, c):
     """Calculate $(a^b)%c$
 
     Running time is $O(log(b))$
+
+    >>> powmod(10, 1, 7)
+    3
+    >>> powmod(10, 10, 7)
+    4
     """
     x = 1
     y = a
@@ -509,14 +485,16 @@ def powmod(a, b, c):
 def is_mersenne_prime(p):
     """Detect if 2**p - 1 is prime
 
-    .. examples::
-
-        assert(is_mersenne_prime(3))
-        assert(is_mersenne_prime(7))
-        assert(is_mersenne_prime(31))
-        assert(is_mersenne_prime(127))
-
     Uses the `Lucas-Lehmer test <http://en.wikipedia.org/wiki/Lucas%E2%80%93Lehmer_primality_test>`_
+
+    >>> is_mersenne_prime(3)
+    True
+    >>> is_mersenne_prime(7)
+    True
+    >>> is_mersenne_prime(31)
+    True
+    >>> is_mersenne_prime(127)
+    True
     """
     s = 4
     M = 2**p - 1
@@ -526,4 +504,6 @@ def is_mersenne_prime(p):
         return True
     return False
 
-
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()
