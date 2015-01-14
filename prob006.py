@@ -11,5 +11,8 @@ def squareOfSum(n):
 def diff(n):
     return squareOfSum(n) - sumOfSquares(n)
 
-print diff(10)
+# testcase
+assert diff(10) == 2640 
+
+# solution
 print diff(100)
