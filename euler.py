@@ -16,7 +16,7 @@ import sympy
 import itertools
 from itertools import combinations, permutations, \
     combinations_with_replacement
-from sympy import totient, isprime, divisors, factors
+from sympy import totient, isprime, divisors, factorint, primefactors
 
 # we'll rename this to minimise regressions
 fib = sympy.fibonacci
@@ -481,6 +481,15 @@ def powmod(a, b, c):
         b /= 2
     return x % c
 
+def radical(n):
+    """A radical is the product of distinct prime factors
+
+    For example, 504 = 2^3 x 3^2 x 7, so radical(504) = 2 x 3 x 7 = 42
+
+    >>> radical(504)
+    42
+    """
+    return product(sympy.factorint(n).keys())
 
 def is_mersenne_prime(p):
     """Detect if 2**p - 1 is prime
