@@ -5,7 +5,7 @@ def foo(n):
     res = []
     for i in range(100,1000):
         if i % n == 0:
-            s = euler.intToSeq(i)
+            s = euler.digits(i)
             if len(set(s)) == 3:
                 res.append(s)
     return res
@@ -29,10 +29,6 @@ def substringProps( seq ):
         if val % divisor != 0:
             return False
     return True
-
-def take(n, iterable):
-    "Return first n items of the iterable as a list"
-    return list(itertools.islice(iterable, n))
 
 res = []
 for x in validPandigital():
