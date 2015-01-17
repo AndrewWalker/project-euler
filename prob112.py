@@ -1,3 +1,7 @@
+"""
+Keywords: bouncy number, increasing number, decreasing number
+"""
+
 import unittest
 import euler
 import sys
