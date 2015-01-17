@@ -1,19 +1,9 @@
-import euler
+"""Project Euler 7 - 10001st prime
 
-def naturalNumbers():
-    i = 1
-    while 1:
-        yield i
-        i += 1
+url: https://projecteuler.net/problem=7
+keywords: nth-prime
+status: complete
+"""
+import sympy
 
-def nthprime(n):
-    seen = 0
-    for i in naturalNumbers():
-        if euler.isprime(i):
-            seen += 1
-        if seen == (n+1):
-            return i
-
-#for i in range(1,10):
-#    print i, nthprime(i)
-print nthprime(10001)
+print sympy.prime(10001)

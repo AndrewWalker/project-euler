@@ -6,6 +6,12 @@ on the command-line like:
     $ python euler.py
 
 You won't see any results if the tests passed
+
+Other things you should be aware of
+
+    sympy.prime - the n-th prime
+    sympy.primepi - the count of primes below n
+
 """
 import math
 import os
@@ -304,6 +310,8 @@ def product(seq):
 
     >>> product([2, 3, 4])
     24
+    >>> produce([3, 4, 5])
+    60
     """
     return reduce( lambda a,b : a*b, seq, 1 )
 
@@ -371,55 +379,16 @@ def word_sum(word):
     """
     return sum([ ord(c)-ord('A')+1 for c in word ])
 
-def randBigPrime():
-    '''
-    Return a large prime number
-    '''
-    x = random.randint(0xA0000000,0xFFFFFFFF)
-    while isprime(x) == False:
-        x = random.randint(0xA0000000,0xFFFFFFFF)
-    return x
-
-def fastfib(n):
-    def powLF(n):
-        if n == 1:     return (1, 1)
-        L, F = powLF(n//2)
-        L, F = (L**2 + 5*F**2) >> 1, L*F
-        if n & 1:
-            return ((L + 5*F)>>1, (L + F) >>1)
-        else:
-            return (L, F)
-    if n & 1:
-        return powLF(n)[1]
-    else:
-        L, F = powLF(n // 2)
-        return L * F
-
-def fastfibFrontNine(n):
-    return seqToInt(intToSeq(fastfib(8000))[0:9])
-
-
-def int2base(x, base):
-    """Convert a
-    """
-    import string
-    digs = string.digits + string.lowercase
-    # Alex Martelli
-    # http://stackoverflow.com/a/2267446/2246
-    if x < 0: sign = -1
-    elif x==0: return '0'
-    else: sign = 1
-    x *= sign
-    digits = []
-    while x:
-        digits.append(digs[x % base])
-        x /= base
-    if sign < 0:
-        digits.append('-')
-    digits.reverse()
-    return ''.join(digits)
-
 def count_partitions(m):
+    """Count the number of ways to partition an integer
+
+    See OEIS - http://oeis.org/A000041
+
+    >>> count_partitions(5)
+    7
+    >>> count_partitions(10)
+    42
+    """
     # from http://stackoverflow.com/questions/7802160/number-of-ways-to-partition-a-number-in-python
     @in_mem_memoize
     def partition(k, n):
@@ -430,10 +399,16 @@ def count_partitions(m):
         return partition(k+1, n) + partition(k, n-k)
     return partition(1, m)
 
-# You can think of this as a form of restricted partitioning
-# In which there are a restricted number of classes (coins).
 @in_mem_memoize
 def coin_change(coins, value):
+    """Count all the ways you can make change 
+
+    You can think of this as a form of restricted partitioning
+    In which there are a restricted number of classes (coins).
+
+    >>> euler.coin_change((1,2,5,10), 20)
+    40
+    """
     # http://en.wikipedia.org/wiki/Change-making_problem
     if value <  0: return 0
     if value == 0: return 1

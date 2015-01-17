@@ -1,28 +1,31 @@
-coins = [1,2,5,10,20,50,100,200]
-count = [ range((200/i)+1) for i in coins ]
+"""Project Euler 31 - Coin Sums
 
-def tally(c):
-    return sum([c*v for c,v in zip(c,coins)])
+url: https://projecteuler.net/problem=31
+status: complete
+keywords: knapsack, change-making
 
-def coinGen(counts,vals,val):
-    if counts == []:
-        yield []
-    else:
-        for i in counts[0]:
-            curval = val + i*vals[0]
-            if curval <= 200:
-                for rest in coinGen(counts[1:],vals[1:],curval):
-                    comb = [i] + rest
-                    yield comb
+Q. Anything else to read?
+A. Yep,
 
-cnt = 0
-for i in coinGen(count,coins,0):
-    change = False
-    t = tally(i)
-    if t == 200:
-        cnt += 1
-        change = True
-    if change and cnt % 1000 == 0:
-        print cnt,i
+    http://en.wikipedia.org/wiki/Change-making_problem
+    http://en.wikipedia.org/wiki/Knapsack_problem
 
-print 'soln = ',cnt
+Q. Anything useful in the forum?
+A. From the Haskell solution by mvz in https://projecteuler.net/thread=31
+    
+    main :: IO ()
+    main = print $ count [200,100,50,20,10,5,2,1] 200
+    
+    count :: [Integer] -> Integer -> Integer
+    count _ 0      = 1
+    count [c] _    = 1
+    count (c:cs) s = sum $ map (count cs . (s-)) [0,c..s]
+
+Q. Was this hard?
+A. Yep. found this one really hard
+"""
+import euler
+
+coins = (1,2,5,10,20,50,100,200)
+print euler.coin_change(coins, 200)
+
