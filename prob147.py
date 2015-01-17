@@ -1,7 +1,8 @@
-"""
-Problem 147 rectangles in a cross hatched grid
+"""Project Euler 147 - rectangles in a cross hatched grid
 
-https://projecteuler.net/problem=147
+status: started
+url: https://projecteuler.net/problem=147
+keywords: symmetry, grid, geometry, induction?
 
 Q. What is hard?
 A. Looks like lots of special cases. Especially for diagonals

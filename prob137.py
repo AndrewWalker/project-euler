@@ -1,9 +1,7 @@
-"""
-
-Fibonacci golden nuggets
-========================
+"""Project Euler 137 - Fibonacci golden nuggets
 
 url : https://projecteuler.net/problem=137
+status: started
 
 Q. Why does this problem appear hard?
 A. Because it has an infinite series in it - can't do much with that.
