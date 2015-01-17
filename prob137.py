@@ -43,8 +43,11 @@ A. Solutions in the form
     1 + 2n + 5n^2
     that are perfect squares
 
+Q. Can you enumerate the solutions?
+A. No, it's too slow
+
 Q. So how do you enumerate them quickly?
-A. Complete the square
+A. Possibly use complete the square / pells equation?
 
 
 
@@ -61,15 +64,18 @@ def is_nugget(x):
 def show(x):
     return x/(1.0 - x - x**2)
 
+def inv(x):
+    return (-1-x+math.sqrt(1 + 2.0*x + 5*x**2))/(2*x)
+
 def tests():
-    def inv(x):
-        return (-1-x+math.sqrt(1 + 2.0*x + 5*x**2))/(2*x)
     assert (math.sqrt(13)-2)/3.0, inv(3.0)
     assert (math.sqrt(89)-5)/8.0, inv(4.0)
 
 # enumeration
-for n in xrange(1, 10**7):
-    if is_nugget(n):
-        print n
+for n in xrange(1, 20):
+    print inv(n)
+#for n in xrange(1, 10**7):
+#    if is_nugget(n):
+#        print n
 
 
