@@ -54,6 +54,17 @@ A. State machine trick?
 
         (1-placed, 0-placed, a-placed, non-zero)
         Transitions are, ( Any 1 0 A )
+
+
+Q. Prety close, but still wrong
+A. Missing the case where 0 is the first valid digit
+
+01A  (doesn't make sense)
+001A (doesn't include zero)
+
+maybe need to add another state item to work out if the prefix
+is all zeros, and none of the rest is zeros
+
 """
 
 digits = [0,1,2,3,4,5,6,7,8,9,'A','B','C','D','E','F']
@@ -76,17 +87,53 @@ def count_matches(n):
     cnt = 0
     for s in generate_valid_numbers(n):
         if is_match(s):
+            print s, len(s)
             cnt += 1
     return cnt
 
-#print count_matches(3)
-#print count_matches(4)
-#print count_matches(5)
+#0,_,_  ->1   1,_,_
+#_,0,_  ->A   _,1,_
+#_,_,0  ->0   _,_,1
 
-## upper bounds
-#print 6*16**1*4
-#print 6*16**2*10
-#from euler import *
-#print 6 * 16**13 * ncr(16,13)
+def transition(c, state):
+    if c == '0':
+        if state[0] == 0:
+            return (1, state[1], state[2])
+        else:
+            return state
+    elif c == '1':
+        if state[1] == 0:
+            return (state[0], 1, state[2])
+        else:
+            return state
+    elif c == 'A':
+        if state[2] == 0:
+            return (state[0], state[1], 1)
+        else:
+            return state
+    return state
+import collections
+from pprint import pprint
+INITIAL = (0,0,0)
+chars = '0123456789ABCDEF'
 
 
+def step(states):
+    out = collections.defaultdict(int)
+    for s, cnt in states.iteritems():
+        for c in chars:
+            sprime = transition(c, s)
+            out[sprime] += cnt
+    return dict(out)
+
+def multistep(steps):
+    states = { INITIAL : 1 }
+    for i in xrange(steps):
+        states = step(states)
+    return states
+
+n = 16
+steps = multistep(n)
+#count_matches(n)
+print hex(steps[(1,1,1)]).upper()[2:]
+#print hex(count_matches(n)).upper()[2:]
