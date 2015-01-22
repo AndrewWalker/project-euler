@@ -488,6 +488,69 @@ def is_mersenne_prime(p):
         return True
     return False
 
+def legendres_theorem( n, p ):
+    """For p, prime, find the largest p^k that divides n!
+
+    See also:
+
+        http://www.cut-the-knot.org/blue/LegendresTheorem.shtml
+
+    >>> sympy.factorint(sympy.factorial(10))[2]
+    8
+    >>> legendres_theorem(10, 2)
+    8
+    >>> sympy.factorint(sympy.factorial(100))[7]
+    16
+    >>> legendres_theorem(100, 7)
+    16
+    >>> sympy.factorint(sympy.factorial(1000))[13]
+    81
+    >>> legendres_theorem(1000, 13)
+    81
+    """
+    cnt = 0
+    k = 1
+    while 1:
+        cur = (n / p**k)
+        if cur == 0:
+            break
+        cnt += cur
+        k += 1
+    return cnt
+
+def legendres_binomial( n, r, p ):
+    """For p, prime, find the largest p^k that divides ncr(n,r)
+
+    So both of these are pretty ugly, but they're a bit like 231
+    I *think* they're too slow, but they're important to document
+
+    >>> from sympy import *
+    >>> factorint(binomial(2000,1000))[13]
+    2
+
+    >>> legendres_binomial(2000, 1000, 13)
+    2
+
+    >>> sum((k*v) for k,v in factorint(binomial(120, 17)).iteritems())
+    589
+
+    >>> ps = (prime(i) for i in xrange(1, primepi(120)+1))
+    >>> print sum(p*legendres_binomial(120, 17, p) for p in ps)
+    589
+    """
+    cnt = 0
+    k = 1
+    while 1:
+        p_pow_k = p**k
+        cur = (n/p_pow_k) - (r/p_pow_k) - ((n-r)/p_pow_k)
+        if (n / p_pow_k) == 0:
+            break
+        cnt += cur
+        k += 1
+    return cnt
+
+
+
 if __name__ == "__main__":
     import doctest
     doctest.testmod()
