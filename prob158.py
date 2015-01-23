@@ -181,20 +181,30 @@ What went right
 """
 from euler import *
 
-bound = 26
+def sorted_choice(n, k):
+    """How many are there to choose k things from n, where the choices are in sorted order
 
-@in_mem_memoize
-def sorted_choice(minv, todo):
-    if todo == 0:
-        return 1
-    if minv == bound:
-        return 0
-    return sum([ sorted_choice(x+1, todo-1) for x in xrange(minv, bound) ]) 
+    n is the number of things to choose from
+    k is how many to choose
+    """
+
+    @in_mem_memoize
+    def sorted_choice_impl(n, k, minv):
+        """
+        minv is the lowest value permissable
+        """
+        if k == 0:
+            return 1
+        if minv == n:
+            return 0
+        return sum([ sorted_choice_impl(n, k-1, i+1) for i in xrange(minv, n) ]) 
+
+    return sorted_choice_impl(n, k, 0)
 
 def prob158():
     items = []
-    for i in xrange(1, bound):
-        items.append(sorted_choice(0, i)*oeisA000295(i))
+    for i in xrange(1, 26):
+        items.append(sorted_choice(26, i)*oeisA000295(i))
     print max(items)
 
 prob158()
