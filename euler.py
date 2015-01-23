@@ -310,7 +310,7 @@ def product(seq):
 
     >>> product([2, 3, 4])
     24
-    >>> produce([3, 4, 5])
+    >>> product([3, 4, 5])
     60
     """
     return reduce( lambda a,b : a*b, seq, 1 )
@@ -549,6 +549,16 @@ def legendres_binomial( n, r, p ):
         k += 1
     return cnt
 
+@in_mem_memoize
+def oeisA000295(n):
+    """
+    >>> [ oeisA000295(i) for i in xrange(10) ]
+    [0, 0, 1, 4, 11, 26, 57, 120, 247, 502]
+    """
+    if n < 2:
+        return 0
+    else:
+        return sum([ncr(n, k) for k in xrange(n-1)])
 
 
 if __name__ == "__main__":
