@@ -560,6 +560,26 @@ def oeisA000295(n):
     else:
         return sum([ncr(n, k) for k in xrange(n-1)])
 
+def generate_integer_partitions(values, total):
+    """
+    >>> len(list(generate_integer_partitions((1,2,5,10), 20)))
+    40
+    """
+    
+    def impl(values, total):
+        if total == 0:
+            yield []
+        elif len(values) == 0:
+            yield []
+        else:
+            for i in xrange(len(values)):
+                if total - values[i] >= 0:
+                    for item in impl(values[i:], total-values[i]):
+                        yield [values[i]] + item
+
+    values = list(values)
+    return impl(values, total)
+
 
 if __name__ == "__main__":
     import doctest

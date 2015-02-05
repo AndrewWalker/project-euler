@@ -20,6 +20,10 @@ solutuon - it's a good way to learn how other people did things.
 If you've struggled, it's also a good way to see if anyone else had
 problems
 
+### Have a look at MathsChallenge.net
+
+http://mathschallenge.net/
+
 
 
 ## Jump in and Have a Go
