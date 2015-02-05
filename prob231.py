@@ -1,7 +1,7 @@
 """Project Euler 231 - The prime factorisation of binomial coefficients
 
 url: https://projecteuler.net/problem=231
-Status: thinking
+Status: complete
 Keywords: binomial, factors, prime, factorial
 
 See also:
@@ -28,46 +28,68 @@ A. Yep,
     Split the factorial into a product of terms
     Factor each term individually
 
-Q. How to deal with fraction?
-A. It removes some terms
+Q. Is that fast enough?
+A. Gets you within an order of magnitude in the minute, but still too slow
+
+Q. Is there a better way?
+A. Research!
+
+    See Prime Factors of Binomial Coefficients (Riasat)
+
+    Which describes the technique used here (first suggested by Legendre)
+
+Retrospective
+-------------
+
+Pros:
+    - code was easy to write
+    - had a genuinely good idea about how to speed it up without research
+
+Cons:
+    - this wasn't the first go at this one. Not sure what the problem was previously
+    - it was pretty easy.
+    - this one got forgotten for a while, mainly because it was mostly solved
+      by research. 
+
 """
 from euler import *
 from collections import defaultdict
 import sympy
 from sympy import factorial 
 
-def factorial_factors(n):
-    merge = defaultdict(int)
-    for i in xrange(2, n+1):
-        fs = sympy.factorint(i)
-        for k,v in fs.iteritems():
-            merge[k] += v
-        if i % 10000 == 0:
-            print 100.0 * (float(i)/n)
-    return dict(merge)
+       
+def prime_exponent(factorial_n, p):
+    i = 1
+    cumsum = 0
+    while 1:
+        ki = int(math.floor(factorial_n / float(p**i)))
+        cumsum += ki
+        if ki == 0:
+            break
+        i += 1
+    return cumsum
 
-def get_value(fs):
-    return product(k**v for k, v in fs.iteritems())
-        
-#def slow(n):
-    #return sympy.factorint(sympy.factorial(n))
+def opt_factorial_factors(factorial_n):
+    prime_factors = {}
+    for i in xrange(1, sympy.primepi(factorial_n)+1):
+        p = sympy.prime(i)
+        k = prime_exponent(factorial_n, p)
+        prime_factors[p] = k
+    return prime_factors
 
-#n = 20000000
-#c = 15000000
-#print factorial_factors(n)
+def sum_of_prime_factors(pfs):
+    return sum(p*exponent for p, exponent in pfs.iteritems())
 
-a = factorial_factors(200)
-b = factorial_factors(150)
-c = factorial_factors( 50)
-print a
-print b
+n = 20000000
+k = 15000000
+nf  = opt_factorial_factors(n)
+kf  = opt_factorial_factors(k)
+nkf = opt_factorial_factors(n-k)
 
-for k, v in b.iteritems():
-    a[k] -= v
-for k, v in c.iteritems():
-    a[k] -= v
-
-print get_value(a)
-print factorial(200)/(factorial(150)*factorial(50))
-
+for k, v in kf.iteritems():
+    nf[k] -= v
+for k, v in nkf.iteritems():
+    nf[k] -= v
+#print nf
+print sum_of_prime_factors(nf)
 
