@@ -1,77 +1,74 @@
-from euler import *
+"""Problem 148 - Exploring Pascal's triangle
 
-def row_naive(i):
-    lst = []
-    for j in xrange(i+1):
-        res = ncr(i, j) % 7 == 0
-        lst.append(not res)
-    return lst
+url: https://projecteuler.net/problem=148
+progress: started
+keywords: pascals triangle, binomial, factorial
 
-def to_string(lst):
-    res = []
-    for item in lst:
-        if item:
-            res.append('X')
-        else:
-            res.append('.')
-    return ''.join(res)
+Q. What is hard?
+A. 10^9 rows isn't reachable using brute force
 
-def int2seq(x, base):
-    res = []
-    while x:
-        res.append( x % base )
-        x /= base
-    res.reverse()
-    return res
+Q. Can you explore the problem
+A. Visually:
 
-def padseq(seq, maxlen, padchar):
-    return [padchar] * (maxlen-len(seq)) + list(seq)
+00 _
+01 __
+02 ___
+03 ____
+04 _____
+05 ______
+06 _______
+07 _xxxxxx_
+08 __xxxxx__
+09 ___xxxx___
+10 ____xxx____
+11 _____xx_____
+12 ______x______
+13 ______________
+14 _xxxxxx_xxxxxx_
 
-def row_count(n):
-    lst = [0] + int2seq(n, 7)
-    lst = [ i+1 for i in lst ]
-    return product(lst)
+Q. Is that it?
+A. The pattern is more complex after about 100 rows (you get bigger blocks)
 
-def solve(a, b):
-    cnt = 0
-    for j in xrange(a, b):
-        cnt += row_count(j)
-    return cnt
+Q. Do the row sums appear in OEIS?
+A. No
 
-#print solve(10**6)
-#print math.log(10**9 / 10**6, 7)
-#print 7**5
-#for i in xrange(1,10000):
-    #a = solve(i)
-    #b = sum(range(1,i+1))
-    #print i,
-    #print a,
-    #print b,
-    #print a / float(b)
-#print sum(range(101))
+Q. Does the cummulative sum appear in OEIS?
+A. No
 
-#n = 100
-#for i in xrange(n):
-    #print row_count(i)
+Q. Any other research that helps?
+A. Yep.
 
+    TWO BINOMIAL COEFFICIENT CONJECTURES by Rowland 
 
-#j = -1
-#for i in xrange(10):
-    #j += 343
-    #lst = [0] + int2seq(j, 7)
-    #lst = [k+1 for k in lst]
-    #print lst
-import sys
-step  = 7**5
-start = -1 + step
-while start + step < 10**9:
-    print start
-    lst = [0] + int2seq(start, 7)
-    lst = [k+1 for k in lst]
-    print product(lst[:-5])
-    sys.stdout.flush()
-    start += step
-#print solve(0,i)
-#print solve(i,i*2)/2.
+    From section 2 "One basic question we can ask about Pascal's triangle modulo k
+    is how many nonzero entries there are on row n" it goes on to explain that the
+    question is answered for cases when k is prime
+
+    That paper references work by Hexel and Sachs.
+"""
+import euler
+
+def pascals_triangle(rows):
+    for i in xrange(rows):
+        yield [euler.ncr(i, j) for j in xrange(i+1)]
+
+def triangle_mod(rows, n=7, f = '.', t = 'O'):
+    for row in pascals_triangle(rows):
+        yield [ t if i%n==0 else f for i in row ]
+
+def naive_solution(rows):
+    """
+    >>> naive_solution(100)
+    2361
+    """
+    cumsum = 0
+    for row in triangle_mod(rows, 7, 1, 0):
+        cumsum += sum(row)
+    return cumsum
 
 
+#cum = 0
+#for row in triangle_mod(15, 7, 1, 0):
+    #print sum(row),',',
+    #cum += sum(row)
+    #print cum, ',',
